@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hobi — Qual hobby combina com você?</title>
+<meta name="description" content="Responda 6 perguntas e descubra o hobby que mais combina com o seu jeito. Uma experiência Hobi.">
+<meta property="og:title" content="Qual hobby combina com você? — Hobi">
+<meta property="og:description" content="Seis perguntas rápidas e você descobre o seu perfil de hobby.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   HOBI — Identidade visual
+   Teal institucional, coral de destaque, creme de fundo.
+   Display: Baloo 2 (mesma família arredondada do logotipo)
+   Corpo: Inter
+   ============================================================ */
+:root{
+  --teal:#376A6E;
+  --teal-dark:#24494C;
+  --teal-soft:#E4EDEC;
+  --coral:#E5856C;
+  --coral-soft:#FAE3DA;
+  --sage:#7FA98D;
+  --cream:#F7EDE4;
+  --cream-deep:#EFE1D5;
+  --white:#FFFFFF;
+  --ink:#22403F;
+  --ink-soft:#5E7574;
+  --radius-card:28px;
+  --radius-pill:999px;
+  --shadow-soft:0 18px 40px -24px rgba(30,58,56,.45);
+  --shadow-lift:0 22px 46px -22px rgba(30,58,56,.5);
+  --step:clamp(18px,5vw,28px);
+}
+
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--cream);
+  color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  overflow-x:hidden;
+}
+
+/* --- atmosfera de fundo: manchas suaves da paleta --- */
+.hb-bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.hb-blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5}
+.hb-blob--coral{width:60vw;height:60vw;max-width:420px;max-height:420px;background:var(--coral);top:-14%;right:-18%;opacity:.28}
+.hb-blob--teal{width:70vw;height:70vw;max-width:480px;max-height:480px;background:var(--teal);bottom:-22%;left:-24%;opacity:.18}
+.hb-blob--sage{width:40vw;height:40vw;max-width:280px;max-height:280px;background:var(--sage);top:45%;right:-16%;opacity:.16}
+
+/* --- marca vetorizada a partir do logotipo original --- */
+.hb-mark{display:block;width:100%;height:auto;color:inherit}
+.hb-markwrap{color:var(--teal);transition:opacity .3s ease}
+.hb-markwrap.is-oculto{opacity:0}
+
+/* --- estrutura --- */
+.hb-shell{position:relative;z-index:1;min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:22px var(--step) 40px;max-width:560px;margin:0 auto}
+
+.hb-topbar{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;margin-bottom:14px}
+.hb-back{border:0;background:transparent;color:var(--ink-soft);font:600 13px/1 'Inter',sans-serif;padding:10px;margin-left:-10px;cursor:pointer;border-radius:var(--radius-pill);display:inline-flex;align-items:center;gap:6px}
+.hb-back:hover{color:var(--teal)}
+.hb-back[hidden]{display:none}
+
+/* --- barra de progresso: 6 traços, um por pergunta --- */
+.hb-progress{width:100%;display:flex;gap:6px;margin-bottom:22px}
+.hb-progress[hidden]{display:none}
+.hb-progress i{flex:1;height:5px;border-radius:var(--radius-pill);background:var(--cream-deep);overflow:hidden;position:relative}
+.hb-progress i::after{content:"";position:absolute;inset:0;background:var(--teal);transform:scaleX(0);transform-origin:left;border-radius:inherit;transition:transform .45s cubic-bezier(.4,0,.2,1)}
+.hb-progress i.is-done::after{transform:scaleX(1)}
+.hb-progress i.is-now::after{background:var(--coral);transform:scaleX(1)}
+
+/* --- telas --- */
+.hb-screen{width:100%;display:none;animation:hb-in .45s cubic-bezier(.2,.7,.3,1) both}
+.hb-screen.is-active{display:block}
+@keyframes hb-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.hb-eyebrow{font:600 11px/1 'Inter',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--coral);margin:0 0 14px}
+.hb-title{font-family:'Baloo 2',cursive;font-weight:700;font-size:clamp(30px,8.5vw,42px);line-height:1.1;letter-spacing:-.015em;color:var(--teal-dark);margin:0 0 16px}
+.hb-title em{font-style:normal;color:var(--coral)}
+.hb-lead{font-size:16px;line-height:1.6;color:var(--ink-soft);margin:0 0 12px;max-width:38ch}
+.hb-note{font-size:13px;line-height:1.5;color:var(--ink-soft);margin:14px 0 0}
+
+/* --- botões --- */
+.hb-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;cursor:pointer;
+  background:var(--teal);color:var(--white);font:700 15px/1 'Inter',sans-serif;letter-spacing:.02em;
+  padding:19px 26px;border-radius:var(--radius-pill);box-shadow:var(--shadow-soft);
+  transition:transform .18s ease,background .18s ease,box-shadow .18s ease}
+.hb-btn:hover{background:var(--teal-dark);transform:translateY(-2px);box-shadow:var(--shadow-lift)}
+.hb-btn:active{transform:translateY(0)}
+.hb-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.hb-btn--coral{background:var(--coral)}
+.hb-btn--coral:hover{background:#DE6E50}
+.hb-btn--ghost{background:transparent;color:var(--teal);box-shadow:none;border:2px solid rgba(53,99,95,.25);padding:17px 26px}
+.hb-btn--ghost:hover{background:rgba(53,99,95,.06);border-color:var(--teal);color:var(--teal-dark)}
+
+/* --- capa --- */
+.hb-hero-mark{width:100%;display:flex;justify-content:center;margin:10px 0 22px}
+.hb-tagline{font-family:'Baloo 2',cursive;font-weight:500;font-size:15px;color:var(--ink-soft);text-align:center;margin:-14px 0 26px}
+.hb-tagline b{color:var(--teal);font-weight:700}
+.hb-hash{font-size:12px;letter-spacing:.04em;color:var(--ink-soft);opacity:.75;text-align:center;margin:26px 0 0}
+
+/* --- formulário do @ --- */
+.hb-field{margin:22px 0 0}
+.hb-label{display:block;font:600 12px/1 'Inter',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
+.hb-input-wrap{display:flex;align-items:center;background:var(--white);border:2px solid transparent;border-radius:18px;padding:0 18px;box-shadow:var(--shadow-soft);transition:border-color .18s ease}
+.hb-input-wrap:focus-within{border-color:var(--coral)}
+.hb-at{font-family:'Baloo 2',cursive;font-weight:700;font-size:22px;color:var(--coral);padding-right:4px}
+.hb-input{flex:1;border:0;outline:0;appearance:none;-webkit-appearance:none;border-radius:0;background:transparent;font:500 17px/1 'Inter',sans-serif;color:var(--ink);padding:18px 0}
+.hb-input::placeholder{color:#B6C4C2}
+.hb-error{color:#C24B34;font:500 13px/1.4 'Inter',sans-serif;margin:10px 2px 0;min-height:18px}
+.hb-consent{display:flex;gap:11px;align-items:flex-start;margin:20px 2px 24px;font-size:13px;line-height:1.5;color:var(--ink-soft);cursor:pointer}
+.hb-consent input{appearance:none;width:20px;height:20px;flex:0 0 20px;margin-top:1px;border:2px solid rgba(53,99,95,.35);border-radius:7px;background:var(--white);cursor:pointer;transition:.18s ease}
+.hb-consent input:checked{background:var(--teal);border-color:var(--teal);box-shadow:inset 0 0 0 3px var(--white)}
+.hb-consent.is-faltando{color:#C24B34}
+.hb-consent.is-faltando input{border-color:#C24B34}
+.hb-consent.is-faltando{animation:hb-chama .4s ease}
+@keyframes hb-chama{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* --- perguntas --- */
+.hb-qcount{font:600 11px/1 'Inter',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--coral);margin:0 0 12px}
+.hb-question{font-family:'Baloo 2',cursive;font-weight:700;font-size:clamp(24px,6.4vw,31px);line-height:1.2;color:var(--teal-dark);margin:0 0 24px;letter-spacing:-.01em}
+.hb-options{display:flex;flex-direction:column;gap:11px}
+.hb-opt{appearance:none;-webkit-appearance:none;position:relative;text-align:left;width:100%;cursor:pointer;background:var(--white);border:2px solid transparent;border-radius:20px;
+  padding:18px 20px 18px 56px;font:500 15px/1.45 'Inter',sans-serif;color:var(--ink);box-shadow:0 10px 26px -22px rgba(30,58,56,.7);
+  transition:transform .16s ease,border-color .16s ease,background .16s ease,color .16s ease}
+.hb-opt::before{content:attr(data-letter);position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;border-radius:50%;background:var(--cream);color:var(--ink-soft);
+  font:700 12px/28px 'Inter',sans-serif;text-align:center;transition:.16s ease}
+.hb-opt:hover{border-color:var(--coral);transform:translateY(-2px)}
+.hb-opt:hover::before{background:var(--coral-soft);color:var(--coral)}
+.hb-opt.is-picked{background:var(--teal);color:var(--white);border-color:var(--teal)}
+.hb-opt.is-picked::before{background:rgba(255,255,255,.22);color:var(--white)}
+
+/* --- cálculo --- */
+.hb-loading{text-align:center;padding:72px 0 40px}
+.hb-dots{display:flex;gap:10px;justify-content:center;margin-bottom:26px}
+.hb-dots i{width:12px;height:12px;border-radius:50%;background:var(--teal);animation:hb-bounce 1s infinite ease-in-out}
+.hb-dots i:nth-child(2){background:var(--coral);animation-delay:.14s}
+.hb-dots i:nth-child(3){background:var(--sage);animation-delay:.28s}
+@keyframes hb-bounce{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-12px);opacity:1}}
+
+/* --- resultado --- */
+.hb-result-card{background:var(--teal);color:var(--white);border-radius:var(--radius-card);padding:30px 26px;box-shadow:var(--shadow-lift);position:relative;overflow:hidden}
+.hb-result-card::after{content:"";position:absolute;width:210px;height:210px;border-radius:50%;background:rgba(255,255,255,.06);top:-90px;right:-70px}
+.hb-result-eyebrow{font:600 11px/1 'Inter',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--coral);margin:0 0 10px;position:relative}
+.hb-result-name{font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(32px,9vw,44px);line-height:1.08;margin:0 0 14px;position:relative;letter-spacing:-.02em}
+.hb-result-desc{font-size:15px;line-height:1.6;color:rgba(255,255,255,.86);margin:0;position:relative}
+
+/* radar — o hexágono de perfil, elemento-assinatura */
+.hb-radar{background:var(--white);border-radius:var(--radius-card);padding:24px 20px 20px;margin-top:14px;box-shadow:var(--shadow-soft)}
+.hb-radar h3{font-family:'Baloo 2',cursive;font-weight:700;font-size:19px;color:var(--teal-dark);margin:0 0 4px}
+.hb-radar p{font-size:13px;line-height:1.5;color:var(--ink-soft);margin:0 0 6px}
+.hb-radar svg{width:100%;height:auto;display:block;overflow:visible}
+.hb-radar-shape{fill:rgba(238,130,101,.28);stroke:var(--coral);stroke-width:2.5;stroke-linejoin:round;
+  transform-origin:50% 50%;transform-box:fill-box;animation:hb-pop .8s cubic-bezier(.2,.8,.3,1) both .15s}
+@keyframes hb-pop{from{transform:scale(.05);opacity:0}to{transform:scale(1);opacity:1}}
+.hb-radar-grid{fill:none;stroke:#DFE9E7;stroke-width:1}
+.hb-radar-axis{stroke:#E7EFED;stroke-width:1}
+.hb-radar-label{font:600 10px 'Inter',sans-serif;fill:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase}
+.hb-radar-label.is-top{fill:var(--coral);font-weight:700}
+.hb-radar-pct{font:700 11px 'Baloo 2',cursive;fill:#A9BAB8}
+.hb-radar-pct.is-top{fill:var(--coral)}
+
+.hb-block{background:var(--white);border-radius:var(--radius-card);padding:24px 22px;margin-top:14px;box-shadow:var(--shadow-soft)}
+.hb-block h3{font-family:'Baloo 2',cursive;font-weight:700;font-size:19px;color:var(--teal-dark);margin:0 0 14px}
+.hb-hobbies{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.hb-hobbies li{display:flex;align-items:center;gap:12px;background:var(--cream);border-radius:15px;padding:14px 16px;font-size:15px;font-weight:500}
+.hb-hobbies li b{font-weight:700;color:var(--teal-dark)}
+.hb-hobbies .hb-rank{width:24px;height:24px;flex:0 0 24px;border-radius:50%;background:var(--teal);color:var(--white);font:700 11px/24px 'Inter',sans-serif;text-align:center}
+.hb-hobbies li:first-child .hb-rank{background:var(--coral)}
+.hb-mix{background:var(--coral-soft);border-radius:16px;padding:16px 18px;margin-top:16px;font-size:14px;line-height:1.55;color:#8A3F27}
+.hb-mix b{color:#7A3319}
+.hb-actions{display:flex;flex-direction:column;gap:11px;margin-top:20px}
+.hb-toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--teal-dark);color:#fff;font:600 13px/1 'Inter',sans-serif;
+  padding:14px 20px;border-radius:var(--radius-pill);opacity:0;pointer-events:none;transition:.28s ease;z-index:20}
+.hb-toast.is-on{opacity:1;transform:translate(-50%,0)}
+
+/* --- foco: um contorno só, nunca dois ao mesmo tempo --- */
+:focus{outline:none}
+.hb-btn:focus-visible,.hb-back:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
+.hb-opt:focus-visible{border-color:var(--coral)}
+.hb-input:focus,.hb-input:focus-visible{outline:none;box-shadow:none;border:0}
+.hb-consent input:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+@media (min-width:600px){
+  .hb-shell{padding-top:40px}
+}
+</style>
+</head>
+
+<body>
+<!-- Logotipo Hobi vetorizado a partir do arquivo original -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="marca-hobi" viewBox="0 0 1048 432"><g transform="translate(0,432) scale(0.1,-0.1)" fill="currentColor"><path d="M9775 4136 c-99 -16 -112 -24 -181 -109 -80 -99 -97 -198 -47 -272 15 -22 37 -58 48 -80 33 -61 171 -138 285 -159 108 -19 272 33 353 112 66 64 80 94 81 172 1 63 -1 68 -56 151 -71 106 -76 110 -173 155 -94 44 -178 52 -310 30z"/><path d="M6460 3957 c-143 -59 -190 -108 -211 -222 -16 -87 1 -187 98 -570 20 -77 42 -178 50 -224 8 -46 25 -116 39 -155 14 -39 31 -101 39 -137 8 -36 23 -88 33 -115 11 -27 29 -98 41 -159 11 -60 37 -173 56 -250 20 -77 45 -180 56 -230 10 -49 25 -112 33 -140 49 -182 42 -548 -13 -655 -16 -30 -32 -71 -36 -90 -4 -19 -18 -70 -31 -113 -30 -98 -30 -123 2 -222 31 -96 31 -97 112 -142 60 -34 73 -37 146 -37 85 -1 98 4 200 67 28 18 65 30 98 34 53 5 54 5 173 -74 66 -44 142 -90 170 -102 27 -12 70 -35 96 -51 25 -17 72 -39 103 -50 32 -11 74 -29 93 -41 21 -13 77 -29 145 -40 61 -11 133 -26 159 -33 84 -25 176 -29 279 -12 52 8 131 20 175 26 56 8 104 23 160 50 44 21 96 45 115 53 54 21 238 174 267 221 14 22 37 51 50 64 13 12 33 43 45 68 11 26 32 68 47 93 15 25 44 89 63 141 90 235 115 447 80 655 -12 66 -24 143 -27 170 -11 80 -51 195 -108 306 -29 57 -59 120 -67 139 -7 19 -29 55 -47 80 -19 25 -44 61 -56 79 -12 19 -55 58 -96 87 -40 29 -90 68 -110 87 -40 38 -238 138 -317 161 -85 24 -239 39 -337 33 -103 -6 -336 -59 -382 -86 -270 -162 -492 -343 -584 -478 -66 -97 -150 -28 -151 122 0 39 -6 95 -14 125 -15 59 -36 209 -61 435 -9 77 -21 167 -27 200 -6 33 -17 94 -24 135 -8 41 -21 121 -29 178 -9 57 -24 131 -35 165 -10 34 -21 82 -25 107 -33 220 -90 309 -227 351 -79 25 -141 24 -208 -4z m1843 -1843 c108 -33 140 -53 230 -140 98 -95 182 -307 213 -534 38 -287 -5 -493 -124 -584 -72 -55 -84 -61 -178 -90 -98 -31 -166 -33 -265 -6 -41 11 -110 30 -154 41 -44 11 -92 29 -107 40 -15 10 -52 28 -83 40 -30 11 -78 39 -106 62 -29 23 -75 57 -103 76 -28 18 -63 44 -78 58 -15 14 -42 35 -61 47 -42 26 -105 99 -113 133 -16 63 9 144 95 313 43 84 108 179 160 235 31 34 73 82 93 107 21 25 57 59 80 75 24 16 60 42 82 56 21 15 57 32 80 38 22 6 59 20 81 32 78 40 129 41 258 1z"/><path d="M2260 3771 c-129 -7 -192 -30 -263 -94 l-37 -35 0 -94 c0 -133 54 -409 96 -490 9 -18 21 -67 25 -110 5 -42 18 -100 29 -128 23 -59 45 -225 36 -273 -7 -39 -44 -76 -105 -107 -53 -27 -238 -38 -579 -36 l-224 1 -22 26 c-41 48 -72 216 -87 469 -26 462 -13 410 -123 502 l-60 50 -100 -4 c-182 -8 -252 -47 -319 -180 -44 -87 -48 -143 -30 -392 28 -390 28 -417 4 -448 -21 -26 -95 -73 -181 -113 -57 -27 -68 -42 -86 -107 -24 -91 -18 -176 22 -284 16 -46 121 -122 218 -159 87 -33 81 19 81 -745 0 -607 2 -678 17 -705 43 -80 122 -116 268 -123 106 -4 106 -4 177 32 89 44 139 87 152 129 18 61 22 185 23 762 0 403 4 591 12 615 9 29 22 40 76 67 l65 32 415 12 c228 7 428 9 444 5 15 -4 48 -26 72 -49 42 -40 46 -49 78 -172 19 -71 37 -157 41 -190 12 -107 44 -294 54 -312 5 -10 12 -40 16 -68 4 -27 22 -124 42 -215 19 -91 38 -200 43 -243 6 -50 18 -94 34 -125 14 -26 32 -72 41 -103 20 -75 56 -113 131 -136 199 -61 417 40 458 212 16 68 16 74 -3 160 -10 50 -24 129 -30 177 -7 48 -18 108 -26 135 -8 26 -24 102 -35 168 -12 66 -32 179 -45 250 -79 432 -81 519 -15 555 30 16 229 35 370 35 217 0 223 -6 214 -235 -4 -98 -2 -187 5 -241 15 -116 57 -296 74 -322 7 -12 21 -43 30 -69 65 -194 300 -463 487 -558 25 -13 63 -35 85 -50 38 -26 189 -84 300 -115 28 -7 122 -19 210 -25 88 -6 165 -13 170 -14 6 -2 84 3 173 10 133 12 176 20 244 45 46 16 108 38 138 48 68 22 218 102 285 151 28 21 67 49 88 63 55 36 267 270 320 354 62 97 127 221 127 243 0 10 14 58 31 105 48 138 61 221 61 405 0 147 -3 174 -25 250 -14 47 -33 114 -42 150 -18 72 -106 260 -131 280 -8 8 -24 30 -34 49 -10 20 -36 56 -57 81 -22 25 -47 59 -57 75 -10 17 -36 42 -57 58 -22 15 -49 43 -61 63 -11 19 -38 44 -59 54 -21 11 -53 33 -71 49 -80 69 -358 184 -523 214 -147 28 -276 47 -314 47 -52 0 -247 -29 -307 -46 -28 -8 -68 -14 -90 -14 -63 0 -232 -52 -441 -136 -117 -46 -433 -215 -546 -291 -27 -18 -54 -33 -61 -33 -7 0 -50 -18 -97 -41 -73 -36 -97 -42 -189 -51 -327 -30 -465 12 -503 152 -47 176 -69 296 -83 435 -15 163 -21 196 -73 405 -17 69 -33 138 -36 153 -6 29 -80 107 -125 131 -36 20 -98 24 -230 17z m2972 -1311 c44 -10 97 -30 117 -43 20 -13 52 -29 71 -37 116 -45 246 -187 344 -375 69 -134 81 -192 81 -400 0 -149 -1 -151 -36 -237 -55 -134 -125 -243 -191 -297 -216 -176 -362 -229 -603 -218 -211 10 -353 75 -501 229 -76 78 -174 259 -197 363 -9 39 -23 90 -32 115 -26 72 -29 182 -11 320 28 207 65 316 133 392 22 24 49 57 60 74 32 46 213 124 312 135 120 12 360 1 453 -21z"/><path d="M9795 2805 c-5 -2 -42 -13 -82 -25 -185 -53 -204 -121 -154 -565 13 -114 38 -485 52 -764 5 -118 12 -218 15 -223 5 -8 19 -291 33 -683 10 -292 16 -304 150 -341 105 -29 298 13 379 82 80 68 92 108 92 301 -1 92 -5 227 -10 298 -5 72 -16 335 -25 585 -13 420 -32 700 -56 875 -6 39 -14 120 -19 180 -15 191 -40 231 -157 258 -67 16 -199 29 -218 22z"/></g></symbol>
+</svg>
+
+<div class="hb-bg" aria-hidden="true">
+  <div class="hb-blob hb-blob--coral"></div>
+  <div class="hb-blob hb-blob--teal"></div>
+  <div class="hb-blob hb-blob--sage"></div>
+</div>
+
+<main class="hb-shell">
+
+  <header class="hb-topbar">
+    <button class="hb-back" id="btnVoltar" hidden>← Voltar</button>
+    <div class="hb-markwrap" id="logoTopo" style="width:76px"><svg class="hb-mark" viewBox="0 0 1048 432" role="img" aria-label="Hobi"><use href="#marca-hobi"/></svg></div>
+  </header>
+
+  <div class="hb-progress" id="progresso" hidden></div>
+
+  <!-- ====================== TELA 1 · CAPA ====================== -->
+  <section class="hb-screen is-active" id="tela-capa">
+    <div class="hb-hero-mark">
+      <div class="hb-markwrap" style="width:min(210px,56vw)"><svg class="hb-mark" viewBox="0 0 1048 432" role="img" aria-label="Hobi"><use href="#marca-hobi"/></svg></div>
+    </div>
+    <p class="hb-tagline">Crie. <b>Participe.</b> Viva.</p>
+
+    <p class="hb-eyebrow">Experiência Hobi</p>
+    <h1 class="hb-title">Qual hobby <em>combina</em> com você?</h1>
+    <p class="hb-lead">Todo mundo tem um jeito próprio de descansar, criar e se divertir. Seis perguntas rápidas e a gente te mostra o tipo de experiência que mais tem a ver com o seu.</p>
+    <p class="hb-lead" style="color:var(--teal-dark);font-weight:600">Leva menos de 2 minutos.</p>
+    <div style="margin-top:26px">
+      <button class="hb-btn" id="btnComecar">Começar →</button>
+    </div>
+    <p class="hb-hash">#CrieParticipeViva</p>
+  </section>
+
+  <!-- ====================== TELA 2 · INSTAGRAM ====================== -->
+  <section class="hb-screen" id="tela-insta">
+    <p class="hb-eyebrow">Antes de começar</p>
+    <h2 class="hb-title">Qual é o seu <em>@</em> no Instagram?</h2>
+    <p class="hb-lead">É por lá que a gente te avisa quando abrir uma experiência com a sua cara na sua cidade.</p>
+
+    <div class="hb-field">
+      <label class="hb-label" for="inputInsta">Seu Instagram</label>
+      <div class="hb-input-wrap">
+        <span class="hb-at" aria-hidden="true">@</span>
+        <input class="hb-input" id="inputInsta" type="text" inputmode="text" autocomplete="off"
+               autocapitalize="none" spellcheck="false" placeholder="seuusuario" maxlength="30">
+      </div>
+      <p class="hb-error" id="erroInsta" role="alert"></p>
+    </div>
+
+    <div class="hb-field">
+      <label class="hb-label" for="inputNome">Como podemos te chamar? (opcional)</label>
+      <div class="hb-input-wrap">
+        <input class="hb-input" id="inputNome" type="text" autocomplete="given-name" placeholder="Seu nome" maxlength="60" style="padding-left:2px">
+      </div>
+    </div>
+
+    <label class="hb-consent" id="boxConsent">
+      <input type="checkbox" id="inputConsent">
+      <span>Autorizo a Hobi a guardar meu @ e minhas respostas para me enviar convites de experiências. Posso pedir a exclusão quando quiser.</span>
+    </label>
+
+    <button class="hb-btn" id="btnInsta">Continuar →</button>
+  </section>
+
+  <!-- ====================== TELA 3 · PERGUNTAS ====================== -->
+  <section class="hb-screen" id="tela-pergunta">
+    <p class="hb-qcount" id="contadorPergunta">Pergunta 1 de 6</p>
+    <h2 class="hb-question" id="textoPergunta"></h2>
+    <div class="hb-options" id="opcoes"></div>
+  </section>
+
+  <!-- ====================== TELA 4 · CALCULANDO ====================== -->
+  <section class="hb-screen" id="tela-calculando">
+    <div class="hb-loading">
+      <div class="hb-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+      <h2 class="hb-question" style="margin-bottom:8px">Montando o seu perfil…</h2>
+      <p class="hb-lead" style="margin:0 auto">Cruzando as suas respostas com as experiências da Hobi.</p>
+    </div>
+  </section>
+
+  <!-- ====================== TELA 5 · RESULTADO ====================== -->
+  <section class="hb-screen" id="tela-resultado">
+    <p class="hb-eyebrow" id="saudacao">Seu resultado</p>
+
+    <div class="hb-result-card">
+      <p class="hb-result-eyebrow">Seu perfil de hobby</p>
+      <h2 class="hb-result-name" id="perfilNome"></h2>
+      <p class="hb-result-desc" id="perfilDesc"></p>
+    </div>
+
+    <div class="hb-radar">
+      <h3>Como você se distribui</h3>
+      <p>Ninguém é um perfil só. Este é o desenho do seu jeito entre os seis.</p>
+      <div id="radarWrap"></div>
+    </div>
+
+    <div class="hb-block">
+      <h3>Comece por aqui</h3>
+      <ul class="hb-hobbies" id="listaHobbies"></ul>
+      <div class="hb-mix" id="blocoMix"></div>
+    </div>
+
+    <div class="hb-actions">
+      <button class="hb-btn hb-btn--ghost" id="btnRefazer">Refazer o teste</button>
+    </div>
+
+    <p class="hb-hash">#CrieParticipeViva · meuhobi.com.br</p>
+  </section>
+
+</main>
+
+<div class="hb-toast" id="toast" role="status"></div>
+
+<script type="module">
+/* ============================================================
+   1. CONFIGURAÇÃO DO SUPABASE
+   Troque pelos dados do seu projeto (Settings → API).
+   A chave pública é feita para ficar exposta no navegador —
+   a proteção real está nas policies de RLS do supabase.sql.
+   ============================================================ */
+const SUPABASE_URL = 'https://SEU-PROJETO.supabase.co';
+const SUPABASE_KEY = 'SUA_CHAVE_PUBLICA_AQUI';   // publishable (sb_publishable_...) ou anon
+const TABELA = 'quiz_hobbies';
+
+let db = null;
+try{
+  if(!SUPABASE_URL.includes('SEU-PROJETO')){
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+    db = createClient(SUPABASE_URL, SUPABASE_KEY);
+  }else{
+    console.warn('[Hobi] Supabase não configurado — rodando em modo demonstração. As respostas aparecem no console.');
+  }
+}catch(e){
+  console.warn('[Hobi] Não foi possível carregar o Supabase. O quiz segue funcionando.', e);
+}
+
+/* ============================================================
+   2. PERFIS (ARQUÉTIPOS) E HOBBIES
+   ============================================================ */
+const PERFIS = {
+  criativo:{
+    curto:'Criativo',
+    nome:'O Criativo',
+    eixo:'Arte',
+    desc:'Você precisa colocar o que sente para fora de alguma forma. Gosta de tela em branco, de escolher a cor, de fazer do seu jeito. O resultado importa menos que o prazer de criar.',
+    hobbies:['Pintura em tela','Pintura em taça','Aquarela','Fotografia','Escrita criativa','Teatro']
+  },
+  construtor:{
+    curto:'Construtor',
+    nome:'O Construtor',
+    eixo:'Mãos',
+    desc:'Sua satisfação está em terminar o dia com algo pronto na mão. Você curte técnica, capricho e trabalho minucioso — e gosta de ver a peça sair do zero até o acabamento.',
+    hobbies:['Cerâmica quente (torno)','Cerâmica fria (modelagem)','Crochê e costura','Marcenaria','Confeitaria','Jardinagem']
+  },
+  imparavel:{
+    curto:'Imparável',
+    nome:'O Imparável',
+    eixo:'Energia',
+    desc:'Você recarrega gastando energia. Precisa de movimento, suor e daquela dose de disputa que faz a hora passar voando.',
+    hobbies:['Vôlei','Beach tennis','Padel','Futsal','Futevôlei','Corrida e escalada']
+  },
+  equilibrado:{
+    curto:'Equilibrado',
+    nome:'O Equilibrado',
+    eixo:'Corpo e mente',
+    desc:'Você busca movimento sem cobrança. Quer sair da atividade mais leve do que entrou, no seu ritmo, ouvindo o próprio corpo.',
+    hobbies:['Yoga','Pilates','Alongamento consciente','Tai chi','Caminhada na natureza','Respiração e mobilidade']
+  },
+  analitico:{
+    curto:'Analítico',
+    nome:'O Analítico',
+    eixo:'Foco',
+    desc:'Para você, lazer é alimentar a cabeça. Silêncio, concentração e aquele prazer de destravar algo difícil valem mais que qualquer agito.',
+    hobbies:['Leitura profunda','Meditação','Xadrez','Quebra-cabeças complexos','Novos idiomas','Astronomia']
+  },
+  agitador:{
+    curto:'Agitador',
+    nome:'O Agitador',
+    eixo:'Turma',
+    desc:'Você vai pela companhia. Tanto faz a atividade: o que segura é a resenha, a risada e a história que rende depois.',
+    hobbies:['Esportes coletivos por diversão','Jogos de tabuleiro modernos','Detetive em grupo','RPG de mesa','Clube de leitura','Noites de karaokê e quiz']
+  }
+};
+const ORDEM = ['criativo','construtor','imparavel','equilibrado','analitico','agitador'];
+
+/* ============================================================
+   3. PERGUNTAS E PONTUAÇÃO
+   Cada opção distribui pontos entre um ou dois perfis.
+   ============================================================ */
+const PERGUNTAS = [
+  {
+    texto:'Como você prefere recarregar as energias depois de uma semana exaustiva?',
+    opcoes:[
+      {txt:'No meu canto, com muito silêncio e paz.', pts:{analitico:3, equilibrado:2}},
+      {txt:'Saindo, rindo e conversando com outras pessoas.', pts:{agitador:3}},
+      {txt:'Suando e gastando toda a energia acumulada no corpo.', pts:{imparavel:3}},
+      {txt:'Focando a mente em um projeto manual ou artístico.', pts:{criativo:2, construtor:2}}
+    ]
+  },
+  {
+    texto:'O que te dá mais satisfação no fim de uma atividade nova?',
+    opcoes:[
+      {txt:'Ter um objeto bonito que eu mesmo criei.', pts:{construtor:3, criativo:1}},
+      {txt:'A sensação de ter superado meu próprio limite físico.', pts:{imparavel:3}},
+      {txt:'Sentir a mente mais calma, clara e leve.', pts:{equilibrado:3, analitico:2}},
+      {txt:'As histórias engraçadas que criei com a galera.', pts:{agitador:3}}
+    ]
+  },
+  {
+    texto:'Como você lida com regras e tutoriais passo a passo?',
+    opcoes:[
+      {txt:'Sigo à risca: gosto de método claro e de ver o progresso.', pts:{construtor:2, analitico:3}},
+      {txt:'Fujo deles. Prefiro tela em branco e liberdade total.', pts:{criativo:3}},
+      {txt:'Adoro regras, desde que definam uma competição justa.', pts:{imparavel:2, agitador:2}},
+      {txt:'Prefiro um guia suave e sigo minha intuição e meu corpo.', pts:{equilibrado:3}}
+    ]
+  },
+  {
+    texto:'Qual é o seu cenário ideal para uma manhã de sábado?',
+    opcoes:[
+      {txt:'Uma quadra, parque ou academia com muita ação.', pts:{imparavel:3}},
+      {txt:'Um ateliê (mesmo improvisado em casa) com tintas ou argila.', pts:{criativo:3, construtor:2}},
+      {txt:'Um tapete com música ambiente ou um cantinho com um livro.', pts:{equilibrado:2, analitico:3}},
+      {txt:'Uma mesa cheia de amigos, petiscos e um jogo rolando.', pts:{agitador:3}}
+    ]
+  },
+  {
+    texto:'O que mais te atrai quando aparece uma experiência nova?',
+    opcoes:[
+      {txt:'Sair de lá com algo autoral, com a minha cara.', pts:{criativo:3}},
+      {txt:'Aprender uma técnica de verdade, do começo ao fim.', pts:{construtor:3, analitico:2}},
+      {txt:'Sentir o corpo acordar e sair mais disposto.', pts:{imparavel:2, equilibrado:3}},
+      {txt:'Conhecer gente nova sem aquele clima estranho.', pts:{agitador:3}}
+    ]
+  },
+  {
+    texto:'O que faria você largar um hobby já na segunda semana?',
+    opcoes:[
+      {txt:'Ficar parado, sem sentir o corpo trabalhar.', pts:{imparavel:3}},
+      {txt:'Não ver nada pronto, nenhum resultado nas mãos.', pts:{construtor:3, criativo:1}},
+      {txt:'Barulho, correria e gente demais falando junto.', pts:{analitico:3, equilibrado:2}},
+      {txt:'Fazer tudo sozinho, sem ninguém para dividir.', pts:{agitador:3}}
+    ]
+  }
+];
+
+/* ============================================================
+   4. ESTADO
+   ============================================================ */
+/* Máximo que cada perfil consegue somar respondendo tudo a favor dele.
+   Serve para normalizar: perfis com mais oportunidades de pontuar não
+   levam vantagem indevida no ranking nem no gráfico. */
+const MAXIMO = {};
+ORDEM.forEach(p=>{
+  MAXIMO[p] = PERGUNTAS.reduce((soma,q)=>
+    soma + Math.max(...q.opcoes.map(o=>o.pts[p]||0)), 0);
+});
+
+const estado = {
+  instagram:'', nome:'', consentimento:false,
+  indice:0, respostas:[], pontos:{}, percentuais:{}, contagem:{},
+  registroId:null
+};
+ORDEM.forEach(p=>{estado.pontos[p]=0; estado.percentuais[p]=0; estado.contagem[p]=0;});
+
+const $ = s => document.querySelector(s);
+const telas = {
+  capa:$('#tela-capa'), insta:$('#tela-insta'), pergunta:$('#tela-pergunta'),
+  calculando:$('#tela-calculando'), resultado:$('#tela-resultado')
+};
+
+function mostrar(chave){
+  Object.values(telas).forEach(t=>t.classList.remove('is-active'));
+  telas[chave].classList.add('is-active');
+  window.scrollTo({top:0,behavior:'instant'});
+  $('#logoTopo').classList.toggle('is-oculto', chave==='capa');
+  const emPergunta = chave==='pergunta';
+  $('#progresso').hidden = !emPergunta;
+  $('#btnVoltar').hidden = !(emPergunta || chave==='insta');
+}
+
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('is-on');
+  setTimeout(()=>t.classList.remove('is-on'),2400);
+}
+
+/* ============================================================
+   5. CAPTAÇÃO DO INSTAGRAM
+   ============================================================ */
+const inputInsta=$('#inputInsta'), inputNome=$('#inputNome'),
+      inputConsent=$('#inputConsent'), btnInsta=$('#btnInsta'), erroInsta=$('#erroInsta');
+
+const limpaHandle = v => v.trim().toLowerCase()
+  .replace(/^https?:\/\/(www\.)?instagram\.com\//,'')
+  .replace(/[@\/\s]/g,'');
+
+/* Regras reais do Instagram: letras, números, ponto e underline.
+   O underline pode abrir e fechar o nome; só o ponto tem restrição
+   (não pode ficar nas pontas nem aparecer duplicado). */
+const handleValido = h =>
+  /^[a-z0-9._]{1,30}$/.test(h) && !/\.\./.test(h) && !/^\.|\.$/.test(h);
+
+/* O botão nunca fica travado: ele sempre responde ao clique e,
+   se faltar algo, aponta exatamente o que falta. */
+inputInsta.addEventListener('input', ()=>{ erroInsta.textContent=''; });
+inputConsent.addEventListener('change', ()=>{ $('#boxConsent').classList.remove('is-faltando'); });
+inputInsta.addEventListener('keydown', e=>{ if(e.key==='Enter') btnInsta.click(); });
+
+let enviando = false;
+
+btnInsta.addEventListener('click', async ()=>{
+  if(enviando) return;
+
+  const h = limpaHandle(inputInsta.value);
+  if(!h){
+    erroInsta.textContent = 'Escreva seu @ para continuar.';
+    inputInsta.focus();
+    return;
+  }
+  if(!handleValido(h)){
+    erroInsta.textContent = 'Confira o @: use letras, números, ponto ou underline.';
+    inputInsta.focus();
+    return;
+  }
+  if(!inputConsent.checked){
+    $('#boxConsent').classList.add('is-faltando');
+    toast('Marque a autorização para continuar');
+    return;
+  }
+
+  estado.instagram = h;
+  estado.nome = inputNome.value.trim();
+  estado.consentimento = true;
+  inputInsta.value = h;
+
+  // grava o contato antes do quiz — quem abandona no meio continua sendo lead.
+  // com limite de tempo: o quiz nunca fica esperando o banco.
+  enviando = true;
+  btnInsta.textContent = 'Só um instante…';
+  await comLimite(salvarLead(), 3500);
+  enviando = false;
+  btnInsta.textContent = 'Continuar →';
+
+  iniciaPerguntas();
+});
+
+/* nunca deixa uma chamada de rede travar a experiência */
+function comLimite(promessa, ms){
+  return Promise.race([
+    promessa.catch(e=>console.error('[Hobi]', e)),
+    new Promise(r=>setTimeout(r, ms))
+  ]);
+}
+
+/* ============================================================
+   6. FLUXO DAS PERGUNTAS
+   ============================================================ */
+function montaProgresso(){
+  const barra=$('#progresso'); barra.innerHTML='';
+  PERGUNTAS.forEach(()=>barra.appendChild(document.createElement('i')));
+}
+function pintaProgresso(){
+  [...$('#progresso').children].forEach((el,i)=>{
+    el.classList.toggle('is-done', i < estado.indice);
+    el.classList.toggle('is-now', i === estado.indice);
+  });
+}
+
+function iniciaPerguntas(){
+  estado.indice = 0;
+  montaProgresso();
+  renderPergunta();
+  mostrar('pergunta');
+}
+
+function renderPergunta(){
+  const p = PERGUNTAS[estado.indice];
+  $('#contadorPergunta').textContent = `Pergunta ${estado.indice+1} de ${PERGUNTAS.length}`;
+  $('#textoPergunta').textContent = p.texto;
+  pintaProgresso();
+
+  const box=$('#opcoes'); box.innerHTML='';
+  p.opcoes.forEach((op,i)=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='hb-opt'; b.dataset.letter='ABCD'[i]; b.textContent=op.txt;
+    if(estado.respostas[estado.indice]===i) b.classList.add('is-picked');
+    b.addEventListener('click', ()=>escolher(i,b));
+    box.appendChild(b);
+  });
+  telas.pergunta.classList.remove('is-active');
+  void telas.pergunta.offsetWidth;      // reinicia a animação de entrada
+  telas.pergunta.classList.add('is-active');
+}
+
+function escolher(i, botao){
+  [...$('#opcoes').children].forEach(el=>el.classList.remove('is-picked'));
+  botao.classList.add('is-picked');
+  estado.respostas[estado.indice] = i;
+
+  setTimeout(()=>{
+    if(estado.indice < PERGUNTAS.length-1){
+      estado.indice++;
+      renderPergunta();
+    }else{
+      finalizar();
+    }
+  }, 260);
+}
+
+$('#btnVoltar').addEventListener('click', ()=>{
+  if(telas.insta.classList.contains('is-active')){ mostrar('capa'); return; }
+  if(estado.indice > 0){ estado.indice--; renderPergunta(); }
+  else mostrar('insta');
+});
+
+$('#btnComecar').addEventListener('click', ()=>{ mostrar('insta'); setTimeout(()=>inputInsta.focus(),320); });
+
+/* ============================================================
+   7. CÁLCULO DO PERFIL
+   Empate: ganha quem pontuou em mais perguntas diferentes;
+   persistindo, vale a ordem canônica dos perfis.
+   ============================================================ */
+function calcular(){
+  ORDEM.forEach(p=>{estado.pontos[p]=0; estado.contagem[p]=0;});
+  estado.respostas.forEach((escolha,q)=>{
+    const pts = PERGUNTAS[q].opcoes[escolha].pts;
+    for(const perfil in pts){
+      estado.pontos[perfil] += pts[perfil];
+      estado.contagem[perfil] += 1;
+    }
+  });
+  ORDEM.forEach(p=>{
+    estado.percentuais[p] = Math.round(100 * estado.pontos[p] / MAXIMO[p]);
+  });
+  return [...ORDEM].sort((a,b)=>
+    (estado.percentuais[b]-estado.percentuais[a]) ||
+    (estado.contagem[b]-estado.contagem[a]) ||
+    (ORDEM.indexOf(a)-ORDEM.indexOf(b))
+  );
+}
+
+async function finalizar(){
+  mostrar('calculando');
+  const ranking = calcular();
+  const principal = ranking[0], secundario = ranking[1];
+  renderResultado(principal, secundario, ranking);
+  comLimite(salvarResultado(principal, secundario), 4000);
+  setTimeout(()=>mostrar('resultado'), 1500);
+}
+
+/* ============================================================
+   8. RESULTADO NA TELA
+   ============================================================ */
+function renderResultado(principal, secundario, ranking){
+  const P = PERFIS[principal], S = PERFIS[secundario];
+
+  $('#saudacao').textContent = estado.nome
+    ? `${estado.nome}, você é…`
+    : `@${estado.instagram}, você é…`;
+  $('#perfilNome').textContent = P.nome;
+  $('#perfilDesc').textContent = P.desc;
+
+  // três primeiros hobbies do perfil principal + um do secundário
+  const lista = $('#listaHobbies'); lista.innerHTML='';
+  const sugestoes = [...P.hobbies.slice(0,3), S.hobbies[0]];
+  sugestoes.forEach((h,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML = `<span class="hb-rank">${i+1}</span><span>${h}${i===3?' <b>· do seu lado '+S.curto.toLowerCase()+'</b>':''}</span>`;
+    lista.appendChild(li);
+  });
+
+  $('#blocoMix').innerHTML =
+    `Sua mistura é <b>${P.curto} com ${S.curto}</b>. Na prática: <b>${P.hobbies[0].toLowerCase()}</b> combinado com <b>${S.hobbies[0].toLowerCase()}</b> tende a te segurar por muito mais tempo do que qualquer um dos dois sozinho.`;
+
+  desenharRadar(ranking[0]);
+}
+
+/* --- elemento-assinatura: hexágono dos seis perfis --- */
+function desenharRadar(topo){
+  const cx=150, cy=138, R=92, N=ORDEM.length;
+  const max = Math.max(...ORDEM.map(p=>estado.percentuais[p])) || 1;
+  const ang = i => (Math.PI*2*i/N) - Math.PI/2;
+  const ponto = (i,r) => [cx + Math.cos(ang(i))*r, cy + Math.sin(ang(i))*r];
+
+  const anel = f => ORDEM.map((_,i)=>ponto(i,R*f).map(n=>n.toFixed(1)).join(',')).join(' ');
+  const forma = ORDEM.map((p,i)=>{
+    const r = R * (0.16 + 0.84 * (estado.percentuais[p]/max));
+    return ponto(i,r).map(n=>n.toFixed(1)).join(',');
+  }).join(' ');
+
+  const eixos = ORDEM.map((_,i)=>{
+    const [x,y]=ponto(i,R);
+    return `<line class="hb-radar-axis" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`;
+  }).join('');
+
+  const rotulos = ORDEM.map((p,i)=>{
+    const [x,y]=ponto(i,R+22);
+    const anc = Math.abs(x-cx)<6 ? 'middle' : (x>cx ? 'start':'end');
+    const cima = y < cy - 20;
+    const yl = cima ? y - 4 : y + 6;
+    return `<text class="hb-radar-label${p===topo?' is-top':''}" x="${x.toFixed(1)}" y="${yl.toFixed(1)}" text-anchor="${anc}">${PERFIS[p].curto}</text>
+            <text class="hb-radar-pct${p===topo?' is-top':''}" x="${x.toFixed(1)}" y="${(yl+13).toFixed(1)}" text-anchor="${anc}">${estado.percentuais[p]}%</text>`;
+  }).join('');
+
+  $('#radarWrap').innerHTML = `
+    <svg viewBox="0 0 300 276" role="img" aria-label="Distribuição do seu perfil entre os seis tipos">
+      <polygon class="hb-radar-grid" points="${anel(1)}"/>
+      <polygon class="hb-radar-grid" points="${anel(0.66)}"/>
+      <polygon class="hb-radar-grid" points="${anel(0.33)}"/>
+      ${eixos}
+      <polygon class="hb-radar-shape" points="${forma}"/>
+      ${rotulos}
+    </svg>`;
+}
+
+/* ============================================================
+   9. SUPABASE — gravação
+   ============================================================ */
+async function salvarLead(){
+  estado.registroId = (crypto.randomUUID
+    ? crypto.randomUUID()
+    : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{
+        const r=Math.random()*16|0; return (c==='x'?r:(r&0x3|0x8)).toString(16);
+      }));
+
+  const registro = {
+    id: estado.registroId,
+    instagram: estado.instagram,
+    nome: estado.nome || null,
+    consentimento: estado.consentimento,
+    concluido: false,
+    origem: new URLSearchParams(location.search).get('origem') || 'direto',
+    user_agent: navigator.userAgent.slice(0,300)
+  };
+  if(!db){ console.log('[Hobi · demo] lead:', registro); return; }
+  try{
+    const { error } = await db.from(TABELA).insert(registro);
+    if(error) throw error;
+  }catch(e){
+    estado.registroId = null;                 // o resultado entra como registro novo
+    console.error('[Hobi] Não foi possível gravar o lead:', e.message);
+  }
+}
+
+async function salvarResultado(principal, secundario){
+  const dados = {
+    respostas: estado.respostas.map((escolha,q)=>({
+      pergunta: PERGUNTAS[q].texto,
+      resposta: PERGUNTAS[q].opcoes[escolha].txt,
+      indice: escolha
+    })),
+    pontuacoes: estado.pontos,
+    percentuais: estado.percentuais,
+    perfil_principal: principal,
+    perfil_secundario: secundario,
+    hobbies_sugeridos: PERFIS[principal].hobbies.slice(0,3),
+    concluido: true
+  };
+  if(!db){ console.log('[Hobi · demo] resultado:', {instagram:estado.instagram, ...dados}); return; }
+  try{
+    if(estado.registroId){
+      const { error } = await db.from(TABELA).update(dados).eq('id', estado.registroId);
+      if(error) throw error;
+    }else{
+      const { error } = await db.from(TABELA).insert({
+        instagram: estado.instagram,
+        nome: estado.nome || null,
+        consentimento: estado.consentimento,
+        origem:'fallback',
+        user_agent: navigator.userAgent.slice(0,300),
+        ...dados
+      });
+      if(error) throw error;
+    }
+  }catch(e){
+    console.error('[Hobi] Não foi possível gravar o resultado:', e.message);
+  }
+}
+
+/* ============================================================
+   10. REFAZER
+   ============================================================ */
+$('#btnRefazer').addEventListener('click', ()=>{
+  estado.indice=0; estado.respostas=[]; estado.registroId=null;
+  ORDEM.forEach(p=>{estado.pontos[p]=0; estado.percentuais[p]=0; estado.contagem[p]=0;});
+  iniciaPerguntas();
+});
+
+/* estado inicial da interface */
+mostrar('capa');
+</script>
+</body>
+</html>
