@@ -324,13 +324,13 @@ body{
    A chave pública é feita para ficar exposta no navegador —
    a proteção real está nas policies de RLS do supabase.sql.
    ============================================================ */
-const SUPABASE_URL = 'https://SEU-PROJETO.supabase.co';
+const SUPABASE_URL = 'https://nilxgphzapbucoqpyeiw.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_OcqmTjGYtaKTI-IuHfLuXw_sBkWtp93';
 const TABELA = 'quiz_hobbies';
 
 let db = null;
 try{
-  if(!SUPABASE_URL.includes('SEU-PROJETO')){
+  if(SUPABASE_URL.startsWith('https://') && SUPABASE_KEY.startsWith('sb_')){
     const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
     db = createClient(SUPABASE_URL, SUPABASE_KEY);
   }else{
